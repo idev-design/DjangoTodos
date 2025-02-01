@@ -21,7 +21,7 @@ Welcome to the Todo List Application! This project is a simple and interactive w
 1. Clone the repository:
     ```sh
     git clonehttps://github.com/idev-design/DjangoTodos.git
-    cd todo-list-app
+    cd DjangoTodos
     ```
 
 2. Create a virtual environment and activate it:
