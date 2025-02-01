@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-{% block title %} Todo List {% endblock %} 
-{% block content %}
+<!-- TEST -->
+{% block title %} Todo List {% endblock %} {% block content %}
 
 <div class="container py-5">
   <!-- Header -->
@@ -15,7 +15,11 @@
     <div class="col-lg-6">
       <div class="card shadow-sm">
         <div class="card-body">
-          <form class="d-flex gap-2" id="add-todo-form" onsubmit="addTask(event)">
+          <form
+            class="d-flex gap-2"
+            id="add-todo-form"
+            onsubmit="addTask(event)"
+          >
             <input
               type="text"
               class="form-control form-control-lg"
@@ -44,16 +48,29 @@
           <input
             class="form-check-input flex-shrink-0"
             type="checkbox"
-            {% if item.completed %}checked{% endif %}
+            {%
+            if
+            item.completed
+            %}checked{%
+            endif
+            %}
             onclick="toggleComplete({{ item.id }})"
           />
-          <span class="{% if item.completed %}text-decoration-line-through text-muted{% endif %} flex-grow-1"
+          <span
+            class="{% if item.completed %}text-decoration-line-through text-muted{% endif %} flex-grow-1"
             >{{ item.title }}</span
           >
-          <span class="badge {% if item.completed %}bg-success{% else %}bg-warning{% endif %} rounded-pill">
+          <span
+            class="badge {% if item.completed %}bg-success{% else %}bg-warning{% endif %} rounded-pill"
+          >
             {% if item.completed %}Done{% else %}Pending{% endif %}
           </span>
-          <button class="btn btn-danger btn-sm ms-2" onclick="deleteTask({{ item.id }})">Delete</button>
+          <button
+            class="btn btn-danger btn-sm ms-2"
+            onclick="deleteTask({{ item.id }})"
+          >
+            Delete
+          </button>
         </div>
         {% endfor %}
       </div>
@@ -64,81 +81,85 @@
 <script>
   function toggleComplete(id) {
     fetch(`/toggle-complete/${id}/`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': '{{ csrf_token }}'
+        "Content-Type": "application/json",
+        "X-CSRFToken": "{{ csrf_token }}",
       },
-      body: JSON.stringify({ id: id })
+      body: JSON.stringify({ id: id }),
     })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        const taskElement = document.querySelector(`[data-id="${id}"]`);
-        const checkbox = taskElement.querySelector('input[type="checkbox"]');
-        const title = taskElement.querySelector('span.flex-grow-1');
-        const badge = taskElement.querySelector('span.badge');
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          const taskElement = document.querySelector(`[data-id="${id}"]`);
+          const checkbox = taskElement.querySelector('input[type="checkbox"]');
+          const title = taskElement.querySelector("span.flex-grow-1");
+          const badge = taskElement.querySelector("span.badge");
 
-        if (checkbox.checked) {
-          title.classList.add('text-decoration-line-through', 'text-muted');
-          badge.classList.remove('bg-warning');
-          badge.classList.add('bg-success');
-          badge.textContent = 'Done';
+          if (checkbox.checked) {
+            title.classList.add("text-decoration-line-through", "text-muted");
+            badge.classList.remove("bg-warning");
+            badge.classList.add("bg-success");
+            badge.textContent = "Done";
+          } else {
+            title.classList.remove(
+              "text-decoration-line-through",
+              "text-muted"
+            );
+            badge.classList.remove("bg-success");
+            badge.classList.add("bg-warning");
+            badge.textContent = "Pending";
+          }
         } else {
-          title.classList.remove('text-decoration-line-through', 'text-muted');
-          badge.classList.remove('bg-success');
-          badge.classList.add('bg-warning');
-          badge.textContent = 'Pending';
+          console.error("Failed to toggle complete status:", data.error);
         }
-      } else {
-        console.error('Failed to toggle complete status:', data.error);
-      }
-    })
-    .catch(error => console.error('Error:', error));
+      })
+      .catch((error) => console.error("Error:", error));
   }
 
   function deleteTask(id) {
     fetch(`/delete-task/${id}/`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': '{{ csrf_token }}'
+        "Content-Type": "application/json",
+        "X-CSRFToken": "{{ csrf_token }}",
       },
-      body: JSON.stringify({ id: id })
+      body: JSON.stringify({ id: id }),
     })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        const taskElement = document.querySelector(`[data-id="${id}"]`);
-        taskElement.remove();
-      } else {
-        console.error('Failed to delete task:', data.error);
-      }
-    })
-    .catch(error => console.error('Error:', error));
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          const taskElement = document.querySelector(`[data-id="${id}"]`);
+          taskElement.remove();
+        } else {
+          console.error("Failed to delete task:", data.error);
+        }
+      })
+      .catch((error) => console.error("Error:", error));
   }
 
   function addTask(event) {
     event.preventDefault();
-    const newTaskInput = document.getElementById('new-task');
+    const newTaskInput = document.getElementById("new-task");
     const title = newTaskInput.value;
 
-    fetch('/add-task/', {
-      method: 'POST',
+    fetch("/add-task/", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': '{{ csrf_token }}'
+        "Content-Type": "application/json",
+        "X-CSRFToken": "{{ csrf_token }}",
       },
-      body: JSON.stringify({ title: title })
+      body: JSON.stringify({ title: title }),
     })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        const todoList = document.getElementById('todo-list');
-        const newTask = document.createElement('div');
-        newTask.className = 'list-group-item list-group-item-action d-flex align-items-center gap-3';
-        newTask.setAttribute('data-id', data.id);
-        newTask.innerHTML = `
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          const todoList = document.getElementById("todo-list");
+          const newTask = document.createElement("div");
+          newTask.className =
+            "list-group-item list-group-item-action d-flex align-items-center gap-3";
+          newTask.setAttribute("data-id", data.id);
+          newTask.innerHTML = `
           <input
             class="form-check-input flex-shrink-0"
             type="checkbox"
@@ -148,13 +169,13 @@
           <span class="badge bg-warning rounded-pill">Pending</span>
           <button class="btn btn-danger btn-sm ms-2" onclick="deleteTask(${data.id})">Delete</button>
         `;
-        todoList.appendChild(newTask);
-        newTaskInput.value = '';
-      } else {
-        console.error('Failed to add task:', data.error);
-      }
-    })
-    .catch(error => console.error('Error:', error));
+          todoList.appendChild(newTask);
+          newTaskInput.value = "";
+        } else {
+          console.error("Failed to add task:", data.error);
+        }
+      })
+      .catch((error) => console.error("Error:", error));
   }
 </script>
 
